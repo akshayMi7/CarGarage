@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-2-pa@yvx)v8#32n%2qha_kj^c6i+%d!dv=1kskjm0=*!9g4(n@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['your-heroku-app-name.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['https://cargarage-kp25.onrender.com', 'localhost']
 
 
 # Application definition
@@ -161,8 +161,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-import dj_database_url
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# import dj_database_url
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 import django_heroku
 django_heroku.settings(locals())
