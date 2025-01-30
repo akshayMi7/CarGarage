@@ -15,7 +15,7 @@
 
     <div class="container">
         <h2>Car Management</h2>
-        <div id="message" class="">
+        <div id="message" style="min-height: 20px;" class="">
             <p id="messageText"></p>
         </div>
         <!-- Navbar -->
@@ -27,16 +27,16 @@
         <!-- Signup Form -->
         <div id="signupForm" class="hidden">
             <h3>Signup</h3>
-            <input type="text" id="signupUsername" placeholder="Username">
-            <input type="password" id="signupPassword" placeholder="Password">
+            <input type="text" id="signupUsername"  placeholder="Username" required>
+            <input type="password" id="signupPassword"  placeholder="Password" required>
             <input type="email" id="signupEmail" placeholder="Email">
             <button onclick="signup()">Signup</button>
         </div>
         <!-- Login Form -->
         <div id="loginForm">
             <h3>Login</h3>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="username"  placeholder="Username" required>
+            <input type="password" id="password" required placeholder="Password" required>
             <button onclick="login()">Login</button>
             <p>Trial Username: <strong>testuser</strong></p>
             <p>Trial Password: <strong>password123</strong></p>
@@ -89,6 +89,11 @@
             hide("signupForm");
             show("loginForm");
         }
+        function handleAuthMessage(success, message) {
+            const ele = "messageText";
+            document.getElementById(ele).style.color = success ? "green" : "red";
+            document.getElementById(ele).innerHTML = message;
+        }
         // SIGNUP FUNCTION
         function signup() {
             const username = document.getElementById("signupUsername").value;
@@ -103,10 +108,10 @@
             .then(res => res.json())
             .then(data => {
                 if (data.token) {
-                    document.getElementById("messageText").innerHTML = "Signup successful! Please login";
+                    handleAuthMessage(true, "Signup successful! Please login");
                     showLoginForm();
                 } else {
-                    alert("Signup failed!");
+                    handleAuthMessage(false, "Signup failed! " + (data.error || "Please try again."));
                 }
             });
         }
@@ -129,7 +134,7 @@
                     hide("signupButton");
                     loadCars();
                 } else {
-                    alert("Login failed!");
+                    handleAuthMessage(false, "Login failed! " + (data.error || "Please try again."));
                 }
             });
         }
@@ -217,7 +222,15 @@
             })
             .then(() => { hide("carDetail"); loadCars(); });
         }
-
+        
+        document.querySelectorAll("button, input").forEach(element => {
+            element.addEventListener("click", () => {
+            document.getElementById("messageText").innerText = "";
+            });
+            element.addEventListener("input", () => {
+            document.getElementById("messageText").innerText = "";
+            });
+        });
         // LOAD DATA ON START
         if (authToken) { 
             hide("loginButton");
