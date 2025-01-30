@@ -7,10 +7,15 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view,permission_classes
 from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.shortcuts import render
 
 from django.db.models import Q
 from .models import Car
 from .serializers import CarSerializer
+
+def frontview(request):
+    # This function will render the 'home.html' template
+    return render(request, 'base.html')
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch API with Django</title>
+</head>
+<body>
+    <h1>Welcome to Django + Fetch API</h1>
+    <button id="fetchButton">Fetch API Data</button>
+    <div id="result"></div>
+
+    <script>
+        // JavaScript to fetch data from Django API
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            fetch('/api/hello/')
+                .then(response => response.json()) // Parse JSON response
+                .then(data => {
+                    // Display the result in the "result" div
+                    document.getElementById('result').textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        });
+    </script>
+</body>
+</html>

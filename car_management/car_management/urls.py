@@ -18,8 +18,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from cars.views import frontview
 
 urlpatterns = [
+    path("",frontview,name="frontview"),
     path('admin/', admin.site.urls),
     path('api/', include('cars.urls')),  # Include API routes from the 'cars' app
 ]
