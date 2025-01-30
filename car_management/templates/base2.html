@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Management SPA</title>
+    <!-- <link href="{% static 'css/style.min.css' %}" rel="stylesheet"> -->
     <style>
         /* General Styles */
         body { 
@@ -147,8 +148,70 @@
             background-color: #45a049;
         }
 
+        /* Update Car Form Styles */
+/* Ensure the update card is hidden by default */
+#updateCarForm.hidden {
+    display: none;
+}
 
-    </style>
+/* Update Car Form Styles */
+#updateCarForm {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#updateCarForm h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+input[type="text"], textarea {
+    font-size: 1rem;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: #007bff;
+}
+
+#updateCarForm button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#updateCarForm button:hover {
+    background-color: #0056b3;
+}
+
+#updateCarForm button + button {
+    background-color: #f44336; /* Red color for cancel button */
+    margin-top: 10px;
+}
+
+#updateCarForm button + button:hover {
+    background-color: #d32f2f;
+}
+</style>
 </head>
 <body>
 
@@ -210,7 +273,7 @@
             <input type="file" id="updateCarImages" multiple>
             <button onclick="updateCar()">Update</button>
             <button onclick="hideUpdateCarForm()">Cancel</button>
-        </div>
+        </div>        
 
         <!-- Car Details -->
         <div id="carDetail" class="card-container hidden">
