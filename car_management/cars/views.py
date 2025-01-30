@@ -15,6 +15,7 @@ from .serializers import CarSerializer
 
 def frontview(request):
     # This function will render the 'home.html' template
+    return render(request, 'base2.html')
     return render(request, 'base.html')
 
 @api_view(['POST'])

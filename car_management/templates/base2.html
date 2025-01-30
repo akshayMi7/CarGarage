@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management SPA</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hidden { display: none; }
+        .container { max-width: 600px; margin: auto; }
+        input, button, textarea { display: block; width: 100%; margin: 5px 0; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Car Management</h2>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h3>Login</h3>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden">
+            <button onclick="logout()">Logout</button>
+            <h3>My Cars</h3>
+            <input type="text" id="search" placeholder="Search Cars..." onkeyup="searchCars()">
+            <button onclick="showAddCarForm()">Add Car</button>
+            <ul id="carList"></ul>
+        </div>
+
+        <!-- Add Car Form -->
+        <div id="addCarForm" class="hidden">
+            <h3>Add a Car</h3>
+            <input type="text" id="carTitle" placeholder="Car Title">
+            <textarea id="carDescription" placeholder="Car Description"></textarea>
+            <input type="text" id="carTags" placeholder="Tags (comma separated)">
+            <input type="file" id="carImages" multiple>
+            <button onclick="addCar()">Submit</button>
+            <button onclick="hideAddCarForm()">Cancel</button>
+        </div>
+
+        <!-- Car Details -->
+        <div id="carDetail" class="hidden">
+            <h3>Car Details</h3>
+            <p id="carTitleDetail"></p>
+            <p id="carDescriptionDetail"></p>
+            <p id="carTagsDetail"></p>
+            <button onclick="deleteCar()">Delete</button>
+            <button onclick="showUpdateCarForm()">Update</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/api";
+        let authToken = localStorage.getItem("token") || "";
+
+        function show(elementId) { document.getElementById(elementId).classList.remove("hidden"); }
+        function hide(elementId) { document.getElementById(elementId).classList.add("hidden"); }
+
+        // LOGIN FUNCTION
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch(`${API_URL}/login/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.token) {
+                    authToken = data.token;
+                    localStorage.setItem("token", authToken);
+                    loadCars();
+                } else {
+                    alert("Login failed!");
+                }
+            });
+        }
+
+        function logout() {
+            authToken = "";
+            localStorage.removeItem("token");
+            hide("dashboard");
+            show("loginForm");
+        }
+
+        // FETCH USER'S CARS
+        function loadCars() {
+            if (!authToken) { show("loginForm"); return; }
+
+            fetch(`${API_URL}/cars/`, { headers: { Authorization: `Token ${authToken}` } })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("carList").innerHTML = data.map(car =>
+                    `<li onclick="viewCar(${car.id})">${car.title}</li>`
+                ).join("");
+                hide("loginForm");
+                show("dashboard");
+            });
+        }
+
+        function searchCars() {
+            const query = document.getElementById("search").value;
+
+            fetch(`${API_URL}/cars/search/?q=${query}`, { headers: { Authorization: `Token ${authToken}` } })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("carList").innerHTML = data.map(car =>
+                    `<li onclick="viewCar(${car.id})">${car.title}</li>`
+                ).join("");
+            });
+        }
+
+        // ADD CAR FUNCTION
+        function showAddCarForm() { show("addCarForm"); }
+        function hideAddCarForm() { hide("addCarForm"); }
+
+        function addCar() {
+            const title = document.getElementById("carTitle").value;
+            const description = document.getElementById("carDescription").value;
+            const tags = document.getElementById("carTags").value.split(",");
+
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("tags", JSON.stringify(tags));
+
+            const images = document.getElementById("carImages").files;
+            for (let i = 0; i < images.length; i++) {
+                formData.append("uploaded_images", images[i]);
+            }
+
+            fetch(`${API_URL}/cars/`, {
+                method: "POST",
+                headers: { Authorization: `Token ${authToken}` },
+                body: formData
+            })
+            .then(() => { hideAddCarForm(); loadCars(); });
+        }
+
+        // VIEW CAR DETAILS
+        function viewCar(id) {
+            fetch(`${API_URL}/cars/${id}/`, { headers: { Authorization: `Token ${authToken}` } })
+            .then(res => res.json())
+            .then(car => {
+                document.getElementById("carTitleDetail").innerText = `Title: ${car.title}`;
+                document.getElementById("carDescriptionDetail").innerText = `Description: ${car.description}`;
+                document.getElementById("carTagsDetail").innerText = `Tags: ${car.tags.join(", ")}`;
+                show("carDetail");
+            });
+        }
+
+        // DELETE CAR FUNCTION
+        function deleteCar(id) {
+            fetch(`${API_URL}/cars/${id}/`, {
+                method: "DELETE",
+                headers: { Authorization: `Token ${authToken}` }
+            })
+            .then(() => { hide("carDetail"); loadCars(); });
+        }
+
+        // LOAD DATA ON START
+        if (authToken) { loadCars(); }
+    </script>
+
+</body>
+</html>
