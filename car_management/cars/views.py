@@ -15,7 +15,11 @@ from .serializers import CarSerializer
 
 def frontview(request):
     # This function will render the 'home.html' template
-    return render(request, 'base2.html')
+    domain = request.get_host()
+    full_domain = f"{request.scheme}://{domain}"  # Construct full domain
+    api_url = f"{full_domain}"
+    print(api_url)
+    return render(request, 'base2.html',context={"api_url": api_url})
     return render(request, 'base.html')
 
 @api_view(['POST'])
