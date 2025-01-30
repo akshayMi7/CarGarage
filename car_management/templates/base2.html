@@ -62,6 +62,17 @@
             <button onclick="hideAddCarForm()">Cancel</button>
         </div>
 
+        <!-- Update Car Form -->
+        <div id="updateCarForm" class="hidden">
+            <h3>Update Car</h3>
+            <input type="text" id="updateCarTitle" placeholder="Car Title">
+            <textarea id="updateCarDescription" placeholder="Car Description"></textarea>
+            <input type="text" id="updateCarTags" placeholder="Tags (comma separated)">
+            <input type="file" id="updateCarImages" multiple>
+            <button onclick="updateCar()">Update</button>
+            <button onclick="hideUpdateCarForm()">Cancel</button>
+        </div>
+
         <!-- Car Details -->
         <div id="carDetail" class="hidden">
             <h3>Car Details</h3>
@@ -76,6 +87,7 @@
     <script>
         const API_URL = "{{api_url}}/api";
         let authToken = localStorage.getItem("token") || "";
+        let currentCarId = null;
 
         function show(elementId) { document.getElementById(elementId).classList.remove("hidden"); }
         function hide(elementId) { document.getElementById(elementId).classList.add("hidden"); }
@@ -115,6 +127,7 @@
                 }
             });
         }
+        
         // LOGIN FUNCTION
         function login() {
             const username = document.getElementById("username").value;
@@ -190,6 +203,7 @@
             formData.append("tags", JSON.stringify(tags));
 
             const images = document.getElementById("carImages").files;
+            // Loop through each selected image and append to FormData
             for (let i = 0; i < images.length; i++) {
                 formData.append("uploaded_images", images[i]);
             }
@@ -198,18 +212,31 @@
                 method: "POST",
                 headers: { Authorization: `Token ${authToken}` },
                 body: formData
-            })
-            .then(() => { hideAddCarForm(); loadCars(); });
+            }).then(() => {
+                hideAddCarForm(); 
+                loadCars(); 
+            });
         }
 
         // VIEW CAR DETAILS
         function viewCar(id) {
+            currentCarId = id;
             fetch(`${API_URL}/cars/${id}/`, { headers: { Authorization: `Token ${authToken}` } })
             .then(res => res.json())
             .then(car => {
                 document.getElementById("carTitleDetail").innerText = `Title: ${car.title}`;
                 document.getElementById("carDescriptionDetail").innerText = `Description: ${car.description}`;
                 document.getElementById("carTagsDetail").innerText = `Tags: ${car.tags.join(", ")}`;
+                const imagesContainer = document.createElement("div");
+                imagesContainer.id = "carImagesDetail";
+                car.images.forEach(image => {
+                    const imgElement = document.createElement("img");
+                    imgElement.src = image.url;
+                    imgElement.style.width = "100px";
+                    imgElement.style.margin = "5px";
+                    imagesContainer.appendChild(imgElement);
+                });
+                document.getElementById("carDetail").appendChild(imagesContainer);
                 show("carDetail");
             });
         }
@@ -223,6 +250,45 @@
             .then(() => { hide("carDetail"); loadCars(); });
         }
         
+        // SHOW UPDATE FORM
+        function showUpdateCarForm() {
+            fetch(`${API_URL}/cars/${currentCarId}/`, { headers: { Authorization: `Token ${authToken}` } })
+            .then(res => res.json())
+            .then(car => {
+                document.getElementById("updateCarTitle").value = car.title;
+                document.getElementById("updateCarDescription").value = car.description;
+                document.getElementById("updateCarTags").value = car.tags.join(", ");
+                show("updateCarForm");
+            });
+        }
+
+        // HIDE UPDATE FORM
+        function hideUpdateCarForm() { hide("updateCarForm"); }
+
+        // UPDATE CAR FUNCTION
+        function updateCar() {
+            const title = document.getElementById("updateCarTitle").value;
+            const description = document.getElementById("updateCarDescription").value;
+            const tags = document.getElementById("updateCarTags").value.split(",");
+
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("tags", JSON.stringify(tags));
+
+            const images = document.getElementById("updateCarImages").files;
+            for (let i = 0; i < images.length; i++) {
+                formData.append("uploaded_images", images[i]);
+            }
+
+            fetch(`${API_URL}/cars/${currentCarId}/`, {
+                method: "PUT",
+                headers: { Authorization: `Token ${authToken}` },
+                body: formData
+            })
+            .then(() => { hideUpdateCarForm(); loadCars(); });
+        }
+        
         document.querySelectorAll("button, input").forEach(element => {
             element.addEventListener("click", () => {
             document.getElementById("messageText").innerText = "";
@@ -231,6 +297,7 @@
             document.getElementById("messageText").innerText = "";
             });
         });
+
         // LOAD DATA ON START
         if (authToken) { 
             hide("loginButton");
