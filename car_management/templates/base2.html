@@ -15,13 +15,31 @@
 
     <div class="container">
         <h2>Car Management</h2>
+        <div id="message" class="">
+            <p id="messageText"></p>
+        </div>
+        <!-- Navbar -->
+        <nav>
+            <button id="loginButton" onclick="showLoginForm()">Login</button>
+            <button id="signupButton" onclick="showSignupForm()">Signup</button>
+        </nav>
 
+        <!-- Signup Form -->
+        <div id="signupForm" class="hidden">
+            <h3>Signup</h3>
+            <input type="text" id="signupUsername" placeholder="Username">
+            <input type="password" id="signupPassword" placeholder="Password">
+            <input type="email" id="signupEmail" placeholder="Email">
+            <button onclick="signup()">Signup</button>
+        </div>
         <!-- Login Form -->
         <div id="loginForm">
             <h3>Login</h3>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
             <button onclick="login()">Login</button>
+            <p>Trial Username: <strong>testuser</strong></p>
+            <p>Trial Password: <strong>password123</strong></p>
         </div>
 
         <!-- Dashboard -->
@@ -62,6 +80,36 @@
         function show(elementId) { document.getElementById(elementId).classList.remove("hidden"); }
         function hide(elementId) { document.getElementById(elementId).classList.add("hidden"); }
 
+        // SHOW SIGNUP FORM
+        function showSignupForm() {
+            hide("loginForm");
+            show("signupForm");
+        }
+        function showLoginForm() {
+            hide("signupForm");
+            show("loginForm");
+        }
+        // SIGNUP FUNCTION
+        function signup() {
+            const username = document.getElementById("signupUsername").value;
+            const password = document.getElementById("signupPassword").value;
+            const email = document.getElementById("signupEmail").value;
+
+            fetch(`${API_URL}/register/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.token) {
+                    document.getElementById("messageText").innerHTML = "Signup successful! Please login";
+                    showLoginForm();
+                } else {
+                    alert("Signup failed!");
+                }
+            });
+        }
         // LOGIN FUNCTION
         function login() {
             const username = document.getElementById("username").value;
@@ -77,6 +125,8 @@
                 if (data.token) {
                     authToken = data.token;
                     localStorage.setItem("token", authToken);
+                    hide("loginButton");
+                    hide("signupButton");
                     loadCars();
                 } else {
                     alert("Login failed!");
@@ -87,6 +137,8 @@
         function logout() {
             authToken = "";
             localStorage.removeItem("token");
+            show("signupButton");
+            show("loginButton");
             hide("dashboard");
             show("loginForm");
         }
@@ -167,7 +219,11 @@
         }
 
         // LOAD DATA ON START
-        if (authToken) { loadCars(); }
+        if (authToken) { 
+            hide("loginButton");
+            hide("signupButton");
+            loadCars(); 
+        }
     </script>
 
 </body>
