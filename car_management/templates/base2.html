@@ -5,10 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Management SPA</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .hidden { display: none; }
-        .container { max-width: 600px; margin: auto; }
-        input, button, textarea { display: block; width: 100%; margin: 5px 0; padding: 8px; }
+        /* General Styles */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+        }
+
+        .hidden { 
+            display: none; 
+        }
+
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+        }
+
+        input, button, textarea { 
+            display: block; 
+            width: 100%; 
+            margin: 5px 0; 
+            padding: 8px; 
+        }
+
+        .car-list {
+            list-style-type: disc; /* This adds bullet points */
+            padding-left: 20px; /* Optional to create space for bullets */
+            display: flex;
+            flex-direction: column; /* Stack the items vertically */
+            gap: 10px; 
+        }
+
+        .car-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .car-title {
+            flex-grow: 1; /* Allow the title to take the most space */
+            cursor: pointer;
+        }
+
+        .icons {
+            display: flex;
+            justify-content: flex-end; /* Align icons to the right */
+            gap: 10px; /* Optional space between the icons */
+        }
+
+        .edit-icon, .delete-icon {
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .edit-icon:hover, .delete-icon:hover {
+            color: #007bff; /* Optional: Adds hover color for better UX */
+        }
+
+        .delete-icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+
+        /* Car Detail Card Styles */
+        .card-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4e4e4e;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .card-tags {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .car-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .car-images img {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .update-btn {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .update-btn:hover {
+            background-color: #45a049;
+        }
+
+
     </style>
 </head>
 <body>
@@ -48,7 +187,7 @@
             <h3>My Cars</h3>
             <input type="text" id="search" placeholder="Search Cars..." onkeyup="searchCars()">
             <button onclick="showAddCarForm()">Add Car</button>
-            <ul id="carList"></ul>
+            <ul id="carList" class="car-list"></ul>
         </div>
 
         <!-- Add Car Form -->
@@ -74,14 +213,22 @@
         </div>
 
         <!-- Car Details -->
-        <div id="carDetail" class="hidden">
-            <h3>Car Details</h3>
-            <p id="carTitleDetail"></p>
-            <p id="carDescriptionDetail"></p>
-            <p id="carTagsDetail"></p>
-            <button onclick="deleteCar()">Delete</button>
-            <button onclick="showUpdateCarForm()">Update</button>
+        <div id="carDetail" class="card-container hidden">
+            <div class="card-header">
+                <h3>Car Details</h3>
+            </div>
+            <div class="card-body">
+                <p id="carTitleDetail" class="card-title"></p>
+                <p id="carDescriptionDetail" class="card-description"></p>
+                <p id="carTagsDetail" class="card-tags"></p>
+                <div id="carImagesDetail" class="car-images">
+                    <!-- Image elements will be dynamically added here -->
+                </div>
+            </div>
+            <button class="update-btn" onclick="showUpdateCarForm()">Update</button>
         </div>
+        
+
     </div>
 
     <script>
@@ -169,7 +316,13 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById("carList").innerHTML = data.map(car =>
-                    `<li onclick="viewCar(${car.id})">${car.title}</li>`
+                    `<li class="car-item">
+                        <span onclick="viewCar(${car.id})">${car.title}</span>
+                        <div class="icons">
+                            <span class="edit-icon" onclick="showUpdateCarForm(${car.id})">✏️</span>
+                            <span class="delete-icon" onclick="deleteCar(${car.id})">🗑️</span>
+                        </div>
+                    </li>`
                 ).join("");
                 hide("loginForm");
                 show("dashboard");
@@ -227,16 +380,14 @@
                 document.getElementById("carTitleDetail").innerText = `Title: ${car.title}`;
                 document.getElementById("carDescriptionDetail").innerText = `Description: ${car.description}`;
                 document.getElementById("carTagsDetail").innerText = `Tags: ${car.tags.join(", ")}`;
-                const imagesContainer = document.createElement("div");
-                imagesContainer.id = "carImagesDetail";
+                document.getElementById("carImagesDetail").innerHTML = "";  
                 car.images.forEach(image => {
                     const imgElement = document.createElement("img");
-                    imgElement.src = image.url;
+                    imgElement.src = image.image;
                     imgElement.style.width = "100px";
                     imgElement.style.margin = "5px";
-                    imagesContainer.appendChild(imgElement);
+                    document.getElementById("carImagesDetail").appendChild(imgElement);
                 });
-                document.getElementById("carDetail").appendChild(imagesContainer);
                 show("carDetail");
             });
         }
@@ -251,7 +402,8 @@
         }
         
         // SHOW UPDATE FORM
-        function showUpdateCarForm() {
+        function showUpdateCarForm(id) {
+            currentCarId = id || currentCarId;
             fetch(`${API_URL}/cars/${currentCarId}/`, { headers: { Authorization: `Token ${authToken}` } })
             .then(res => res.json())
             .then(car => {
@@ -286,7 +438,7 @@
                 headers: { Authorization: `Token ${authToken}` },
                 body: formData
             })
-            .then(() => { hideUpdateCarForm(); loadCars(); });
+            .then(() => { hideUpdateCarForm();loadCars();viewCar(currentCarId); });
         }
         
         document.querySelectorAll("button, input").forEach(element => {
