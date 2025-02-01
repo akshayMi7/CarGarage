@@ -103,9 +103,9 @@ class CarSearchView(generics.ListAPIView):
     def get_queryset(self):
         query = self.request.query_params.get('q', '')
         if query:
-            return Car.objects.filter(
-                Q(title__icontains=query) |
-                Q(description__icontains=query) |
-                Q(tags__icontains=query)
-            )
+            return Car.objects.filter(owner=self.request.user).filter(
+                    Q(title__icontains=query) |
+                    Q(description__icontains=query) |
+                    Q(tags__icontains=query)
+                )
         return Car.objects.none()

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +37,7 @@
         }
 
         .car-item {
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -148,69 +150,145 @@
         }
 
         /* Update Car Form Styles */
-/* Ensure the update card is hidden by default */
-#updateCarForm.hidden {
-    display: none;
-}
+        /* Ensure the update card is hidden by default */
+        #updateCarForm.hidden {
+            display: none;
+        }
 
-/* Update Car Form Styles */
-#updateCarForm {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        /* Update Car Form Styles */
+        #updateCarForm {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-#updateCarForm h3 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    margin-bottom: 15px;
-}
+        #updateCarForm h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+        }
 
-input[type="text"], textarea {
-    font-size: 1rem;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-}
+        input[type="text"], textarea {
+            font-size: 1rem;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
 
-input[type="text"]:focus, textarea:focus {
-    border-color: #007bff;
-}
+        input[type="text"]:focus, textarea:focus {
+            border-color: #007bff;
+        }
 
-#updateCarForm button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-}
+        #updateCarForm button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
 
-#updateCarForm button:hover {
-    background-color: #0056b3;
-}
+        #updateCarForm button:hover {
+            background-color: #0056b3;
+        }
 
-#updateCarForm button + button {
-    background-color: #f44336; /* Red color for cancel button */
-    margin-top: 10px;
-}
+        #updateCarForm button + button {
+            background-color: #f44336; /* Red color for cancel button */
+            margin-top: 10px;
+        }
 
-#updateCarForm button + button:hover {
-    background-color: #d32f2f;
-}
-</style>
+        #updateCarForm button + button:hover {
+            background-color: #d32f2f;
+        }
+
+    /* Ensure the add car form is hidden by default */
+    #addCarForm.hidden {
+        display: none;
+    }
+
+    /* Add Car Form Styles */
+    #addCarForm {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    #addCarForm h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    #addCarForm input[type="text"],
+    #addCarForm textarea {
+        font-size: 1rem;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+    }
+
+    #addCarForm input[type="text"]:focus,
+    #addCarForm textarea:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    #addCarForm input[type="file"] {
+        font-size: 0.9rem;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+    /* Buttons */
+    #addCarForm button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    #addCarForm button:hover {
+        background-color: #0056b3;
+    }
+
+    #addCarForm button + button {
+        background-color: #f44336; /* Red color for cancel button */
+        margin-top: 10px;
+    }
+
+    #addCarForm button + button:hover {
+        background-color: #d32f2f;
+    }
+    </style>
 </head>
 <body>
 
@@ -248,7 +326,9 @@ input[type="text"]:focus, textarea:focus {
             <button onclick="logout()">Logout</button>
             <h3>My Cars</h3>
             <input type="text" id="search" placeholder="Search Cars..." onkeyup="searchCars()">
-            <button onclick="showAddCarForm()">Add Car</button>
+
+            <button onclick="showAddCarForm()"><span style="margin-right: 5px;">➕</span>Add Car</button>
+            
             <ul id="carList" class="car-list"></ul>
         </div>
 
@@ -262,6 +342,7 @@ input[type="text"]:focus, textarea:focus {
             <button onclick="addCar()">Submit</button>
             <button onclick="hideAddCarForm()">Cancel</button>
         </div>
+
 
         <!-- Update Car Form -->
         <div id="updateCarForm" class="hidden">
@@ -366,6 +447,9 @@ input[type="text"]:focus, textarea:focus {
             localStorage.removeItem("token");
             show("signupButton");
             show("loginButton");
+            hideAddCarForm(); 
+            hideUpdateCarForm()
+            hide("carDetail");
             hide("dashboard");
             show("loginForm");
         }
@@ -393,6 +477,7 @@ input[type="text"]:focus, textarea:focus {
 
         function searchCars() {
             const query = document.getElementById("search").value;
+            if(!query) { loadCars(); return; }
 
             fetch(`${API_URL}/cars/search/?q=${query}`, { headers: { Authorization: `Token ${authToken}` } })
             .then(res => res.json())
@@ -406,6 +491,7 @@ input[type="text"]:focus, textarea:focus {
         // ADD CAR FUNCTION
         function showAddCarForm() { show("addCarForm"); }
         function hideAddCarForm() { hide("addCarForm"); }
+        function hideUpdateCarForm() { hide("updateCarForm"); }
 
         function addCar() {
             const title = document.getElementById("carTitle").value;
@@ -450,6 +536,7 @@ input[type="text"]:focus, textarea:focus {
                     imgElement.style.margin = "5px";
                     document.getElementById("carImagesDetail").appendChild(imgElement);
                 });
+                hideAddCarForm()
                 show("carDetail");
             });
         }
@@ -476,8 +563,6 @@ input[type="text"]:focus, textarea:focus {
             });
         }
 
-        // HIDE UPDATE FORM
-        function hideUpdateCarForm() { hide("updateCarForm"); }
 
         // UPDATE CAR FUNCTION
         function updateCar() {
